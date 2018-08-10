@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Transmitter } from '../transmitter';
-import { TRANSMITTERS } from '../mock-transmitters';
+import { TransmitterService } from '../transmitter.service';
 
 @Component({
   selector: 'app-transmitters',
@@ -8,7 +8,7 @@ import { TRANSMITTERS } from '../mock-transmitters';
   styleUrls: ['./transmitters.component.css']
 })
 export class TransmittersComponent implements OnInit {
-  transmitters = TRANSMITTERS;
+  transmitters: Transmitter[];
 
   selectedTransmitter: Transmitter;
 
@@ -16,9 +16,13 @@ export class TransmittersComponent implements OnInit {
     this.selectedTransmitter = transmitter;
   }
 
-  constructor() { }
+  constructor(private transmitterService: TransmitterService) { }
 
   ngOnInit() {
+    this.getTransmitters();
   }
 
+  getTransmitters(): void {
+    this.transmitters = this.transmitterService.getTransmitters();
+  }
 }
