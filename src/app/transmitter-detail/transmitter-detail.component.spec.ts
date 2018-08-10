@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TransmitterListComponent } from './transmitter-list.component';
+import { TransmitterDetailComponent } from './transmitter-detail.component';
 
-describe('TransmitterListComponent', () => {
-  let component: TransmitterListComponent;
-  let fixture: ComponentFixture<TransmitterListComponent>;
+describe('TransmitterDetailComponent', () => {
+  let component: TransmitterDetailComponent;
+  let fixture: ComponentFixture<TransmitterDetailComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TransmitterListComponent ]
+      declarations: [ TransmitterDetailComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TransmitterListComponent);
+    fixture = TestBed.createComponent(TransmitterDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

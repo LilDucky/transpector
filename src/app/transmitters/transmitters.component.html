@@ -1,0 +1,10 @@
+<h2>My Transmitters</h2>
+<ul class="transmitters">
+  <li *ngFor="let transmitter of transmitters"
+    [class.selected]="transmitter === selectedTransmitter"
+    (click)="onSelect(transmitter)">
+    <span class="badge">{{transmitter.id}}</span> {{transmitter.nickname}}
+  </li>
+</ul>
+
+<app-transmitter-detail [transmitter]="selectedTransmitter"></app-transmitter-detail>

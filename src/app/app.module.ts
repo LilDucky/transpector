@@ -1,18 +1,20 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { TransmitterDetailsComponent } from './transmitters/transmitter-details/transmitter-details.component';
-import { TransmitterListComponent } from './transmitters/transmitter-list/transmitter-list.component';
+import { TransmittersComponent } from './transmitters/transmitters.component';
+import { TransmitterDetailComponent } from './transmitter-detail/transmitter-detail.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TransmitterDetailsComponent,
-    TransmitterListComponent
+    TransmittersComponent,
+    TransmitterDetailComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

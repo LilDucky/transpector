@@ -1,0 +1,11 @@
+<div *ngIf="transmitter">
+
+  <h2>{{transmitter.nickname | uppercase}} Details</h2>
+  <div><span>id: </span>{{transmitter.id}}</div>
+  <div>
+    <label>nickname:
+      <input [(ngModel)]="transmitter.nickname" placeholder="nickname">
+    </label>
+  </div>
+  
+</div>
