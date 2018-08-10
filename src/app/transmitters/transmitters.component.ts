@@ -10,12 +10,6 @@ import { TransmitterService } from '../transmitter.service';
 export class TransmittersComponent implements OnInit {
   transmitters: Transmitter[];
 
-  selectedTransmitter: Transmitter;
-
-  onSelect(transmitter: Transmitter): void {
-    this.selectedTransmitter = transmitter;
-  }
-
   constructor(private transmitterService: TransmitterService) { }
 
   ngOnInit() {
