@@ -5,12 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { TransmittersComponent } from './transmitters/transmitters.component';
 import { TransmitterDetailComponent } from './transmitter-detail/transmitter-detail.component';
+import { MessagesComponent } from './messages/messages.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TransmittersComponent,
-    TransmitterDetailComponent
+    TransmitterDetailComponent,
+    MessagesComponent
   ],
   imports: [
     BrowserModule,

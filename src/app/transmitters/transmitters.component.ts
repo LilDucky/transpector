@@ -23,6 +23,7 @@ export class TransmittersComponent implements OnInit {
   }
 
   getTransmitters(): void {
-    this.transmitters = this.transmitterService.getTransmitters();
+    this.transmitterService.getTransmitters()
+        .subscribe(transmitters => this.transmitters = transmitters);
   }
 }
