@@ -32,4 +32,9 @@ export class TransmitterDetailComponent implements OnInit {
   goBack(): void {
     this.location.back();
   }
+
+  save(): void {
+    this.transmitterService.updateTransmitter(this.transmitter)
+      .subscribe(() => this.goBack());
+  }
 }
