@@ -1,15 +1,24 @@
 import { Injectable } from '@angular/core';
-import { Transmitter } from './transmitter';
-import { Observable, of } from 'rxjs';
-import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import * as io from 'socket.io-client';
+
+import { Transmitter } from './transmitter';
+import { MessageService } from './message.service';
+
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransmitterService {
+
   private transmittersUrl = 'api/transmitters';  // URL to web api
+  private socket;
 
   constructor(
     private http: HttpClient,
@@ -42,6 +51,42 @@ export class TransmitterService {
     );
   }
 
+  /** POST: add a new transmitter to the server */
+  addTransmitter (transmitter: Transmitter): Observable<Transmitter> {
+    console.log(`adding transmitter ${transmitter}`);
+    return this.http.post<Transmitter>(this.transmittersUrl, transmitter, httpOptions).pipe(
+      tap((transmitter: Transmitter) => this.log(`added transmitter w/ id=${transmitter.id}`)),
+      catchError(this.handleError<Transmitter>('addTransmitter'))
+    );
+  }
+
+  /** DELETE: delete the transmitter from the server */
+  deleteTransmitter (transmitter: Transmitter | string): Observable<Transmitter> {
+    const id = typeof transmitter === 'string' ? transmitter : transmitter.id;
+    const url = `${this.transmittersUrl}/${id}`;
+
+    return this.http.delete<Transmitter>(url, httpOptions).pipe(
+      tap(_ => this.log(`deleted transmitter id=${id}`)),
+      catchError(this.handleError<Transmitter>('deleteTransmitter'))
+    );
+  }
+
+  subscribe() {
+    let observable = new Observable(observer => {
+      console.log('subscribing');
+      // TODO: should this be on init?
+      this.socket = io();
+      this.socket.on('glucose', (data) => {
+        console.log(`got data from ${data.id}: ${data.glucose.transmitterStartDate}`);
+        observer.next(data);
+      });
+      return () => {
+        this.socket.disconnect();
+      };
+    })
+    return observable;
+  }
+
   /** Log a HeroService message with the MessageService */
   private log(message: string) {
     this.messageService.add(`TransmitterService: ${message}`);
@@ -67,6 +112,7 @@ export class TransmitterService {
     };
   }
 }
+
 
 
 // // THE BELOW FROM THE HEROKU EXAMPLE APP

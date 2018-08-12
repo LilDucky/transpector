@@ -1,9 +1,8 @@
 var express = require("express");
 var bodyParser = require("body-parser");
-// var mongodb = require("mongodb");
-// var ObjectID = mongodb.ObjectID;
 
-// var CONTACTS_COLLECTION = "contacts";
+const socketIO = require('socket.io');
+const TransmitterIO = require('./transmitterIO');
 
 var TRANSMITTERS = [
   { id: '400000', nickname: 'G5 1' },
@@ -18,34 +17,37 @@ var TRANSMITTERS = [
   { id: '400009', nickname: 'G5 10' }
 ];
 
+
+// var mongodb = require("mongodb");
+// var ObjectID = mongodb.ObjectID;
+
+// var CONTACTS_COLLECTION = "contacts";
+
 var app = express();
 app.use(bodyParser.json());
 
 // Create link to Angular build directory
 var distDir = __dirname + "/dist/";
-console.log(distDir);
 app.use(express.static(distDir));
+
 
 // // Create a database variable outside of the database connection callback to reuse the connection pool in your app.
 // var db;
 
-// Connect to the database before starting the application server.
-// mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/test", function (err, client) {
-  // if (err) {
-  //   console.log(err);
-  //   process.exit(1);
-  // }
-
-  // Save database object from the callback for reuse.
-  // db = client.db();
-  // console.log("Database connection ready");
-
-// Initialize the app.
 var server = app.listen(process.env.PORT || 8080, function () {
   var port = server.address().port;
   console.log("App now running on port", port);
 });
-// });
+
+const io = socketIO(server);
+
+io.on('connection', (socket) => {
+  console.log('Client connected');
+  socket.on('disconnect', () => console.log('Client disconnected'));
+});
+
+// TransmitterIO(io.of('/cgm')); // TODO: not sure if we need namespaces
+const transmitterIO = TransmitterIO(io); // TODO: not sure if we need namespaces
 
 // CONTACTS API ROUTES BELOW
 
@@ -61,17 +63,19 @@ function handleError(res, reason, message, code) {
  */
 
 app.get("/api/transmitters", function(req, res) {
-  res.status(200).json(TRANSMITTERS);
+  res.status(200).json(transmitterIO.getTransmitters());
 });
 
 app.post("/api/transmitters", function(req, res) {
   var newTransmitter = req.body;
+  console.log(newTransmitter);
   if (!req.body.id) {
     handleError(res, "Invalid user input", "Must provide an ID.", 400);
   } else {
-    TRANSMITTERS.push(newTransmitter);
+    const newItem = transmitterIO.addTransmitter(newTransmitter);
+    console.log(newItem);
     // res.status(201).json(doc.ops[0]);
-    res.status(201);
+    res.status(201).json(newItem);
   }
 });
 
@@ -82,7 +86,8 @@ app.post("/api/transmitters", function(req, res) {
  */
 
 app.get("/api/transmitters/:id", function(req, res) {
-  var transmitter = TRANSMITTERS.find(function(e) {
+  // put this method in TransmitterIO
+  var transmitter = transmitterIO.getTransmitters().find(function(e) {
     return req.params.id === e.id;
   });
   if (transmitter) {
@@ -108,12 +113,7 @@ app.put("/api/transmitters/:id", function(req, res) {
 });
 
 app.delete("/api/transmitters/:id", function(req, res) {
-  // TODO: implement
-  // db.collection(CONTACTS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
-  //   if (err) {
-  //     handleError(res, err.message, "Failed to delete contact");
-  //   } else {
-  //     res.status(200).json(req.params.id);
-  //   }
-  // });
+  // TODO: handle errors
+  transmitterIO.deleteTransmitter(req.params.id);
+  res.status(200).json(req.params.id);
 });

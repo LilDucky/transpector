@@ -1,9 +1,19 @@
 <h2>My Transmitters</h2>
-
+<div>
+  <label>Transmitter ID:
+    <input #id />
+  </label>
+  <!-- (click) passes input value to add() and then clears the input -->
+  <button (click)="add(id.value); id.value=''">
+    add
+  </button>
+</div>
 <ul class="transmitters">
   <li *ngFor="let transmitter of transmitters">
     <a routerLink="/detail/{{transmitter.id}}">
       <span class="badge">{{transmitter.id}}</span> {{transmitter.nickname}}
     </a>
+    <button class="delete" title="delete transmitter"
+      (click)="delete(transmitter)">x</button>
   </li>
 </ul>
