@@ -31,7 +31,7 @@ module.exports = (io) => {
       } else if (m.msg == 'glucose') {
         const glucose = m.data;
 
-        console.log('got glucose: ' + glucose.glucose + ' unfiltered: ' + glucose.unfiltered/1000);
+//        console.log('got glucose: ' + glucose.glucose + ' unfiltered: ' + glucose.unfiltered/1000);
         io.emit('glucose', m.data);
       } else if (m.msg == 'messageProcessed') {
         // TODO: check that dates match

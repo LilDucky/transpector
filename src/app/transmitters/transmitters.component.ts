@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Transmitter } from '../transmitter';
 import { TransmitterService } from '../transmitter.service';
+import { TimeAgoPipe } from 'time-ago-pipe';
 
 @Component({
   selector: 'app-transmitters',
@@ -9,6 +10,7 @@ import { TransmitterService } from '../transmitter.service';
 })
 export class TransmittersComponent implements OnInit {
   transmitters: Transmitter[];
+  date: Date = new Date('2018-06-21T12:47:06.704Z');
   connection;
 
   constructor(private transmitterService: TransmitterService) { }

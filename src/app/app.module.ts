@@ -9,13 +9,16 @@ import { TransmittersComponent } from './transmitters/transmitters.component';
 import { TransmitterDetailComponent } from './transmitter-detail/transmitter-detail.component';
 import { MessagesComponent } from './messages/messages.component';
 import { AppRoutingModule } from './/app-routing.module';
+import { TimeAgoPipe } from 'time-ago-pipe';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     TransmittersComponent,
     TransmitterDetailComponent,
-    MessagesComponent
+    MessagesComponent,
+    TimeAgoPipe
   ],
   imports: [
     BrowserModule,
