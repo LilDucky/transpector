@@ -2,7 +2,9 @@ var express = require("express");
 var bodyParser = require("body-parser");
 
 const socketIO = require('socket.io');
-const TransmitterIO = require('./transmitterIO');
+const Transmitter = require('./transmitter');
+
+const transmitters = [];
 
 var TRANSMITTERS = [
   { id: '400000', nickname: 'G5 1' },
@@ -30,7 +32,6 @@ app.use(bodyParser.json());
 var distDir = __dirname + "/dist/";
 app.use(express.static(distDir));
 
-
 // // Create a database variable outside of the database connection callback to reuse the connection pool in your app.
 // var db;
 
@@ -47,9 +48,11 @@ io.on('connection', (socket) => {
 });
 
 // TransmitterIO(io.of('/cgm')); // TODO: not sure if we need namespaces
-const transmitterIO = TransmitterIO(io); // TODO: not sure if we need namespaces
+//const transmitterIO = TransmitterIO(io); // TODO: not sure if we need namespaces
+transmitters.push(Transmitter('416SA4', io));
+transmitters.push(Transmitter('4G2DT7', io));
 
-// CONTACTS API ROUTES BELOW
+// API ROUTES BELOW
 
 // Generic error handler used by all endpoints.
 function handleError(res, reason, message, code) {
@@ -63,19 +66,21 @@ function handleError(res, reason, message, code) {
  */
 
 app.get("/api/transmitters", function(req, res) {
-  res.status(200).json(transmitterIO.getTransmitters());
+  const status = [];
+  transmitters.forEach((transmitter) => {
+    status.push(transmitter.status);
+  });
+  res.status(200).json(status);
 });
 
 app.post("/api/transmitters", function(req, res) {
-  var newTransmitter = req.body;
-  console.log(newTransmitter);
-  if (!req.body.id) {
+  var id = req.body.id;
+  if (!id) {
     handleError(res, "Invalid user input", "Must provide an ID.", 400);
   } else {
-    const newItem = transmitterIO.addTransmitter(newTransmitter);
-    console.log(newItem);
-    // res.status(201).json(doc.ops[0]);
-    res.status(201).json(newItem);
+    const newTransmitter = Transmitter(id)
+    transmitters.push(Transmitter(id));
+    res.status(201).json(newTransmitter.status);
   }
 });
 
@@ -87,11 +92,11 @@ app.post("/api/transmitters", function(req, res) {
 
 app.get("/api/transmitters/:id", function(req, res) {
   // put this method in TransmitterIO
-  var transmitter = transmitterIO.getTransmitters().find(function(e) {
+  var transmitter = transmitters.find(function(e) {
     return req.params.id === e.id;
   });
   if (transmitter) {
-    res.status(200).json(transmitter);
+    res.status(200).json(transmitter.status);
   } else {
     handleError(res, "blah", "Failed to get transmitter");
   }
@@ -114,6 +119,18 @@ app.put("/api/transmitters/:id", function(req, res) {
 
 app.delete("/api/transmitters/:id", function(req, res) {
   // TODO: handle errors
-  transmitterIO.deleteTransmitter(req.params.id);
-  res.status(200).json(req.params.id);
+  var transmitter = transmitters.find(function(e) {
+    return req.params.id === e.id;
+  });
+  // stop listening for this transmitter
+  transmitter.cleanup();
+  const idx = transmitters.findIndex(e => {
+    return e.id === id;
+  })
+  transmitters.splice(idx, 1);
+});
+
+// prevent error message on reloads as per https://stackoverflow.com/a/35284602
+app.get('/*', function(req, res){
+  res.sendFile(distDir + '/index.html');
 });

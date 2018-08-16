@@ -78,6 +78,7 @@ export class TransmitterService {
       this.socket = io();
       this.socket.on('glucose', (data) => {
         console.log(`got data from ${data.id}: ${data.glucose.transmitterStartDate}`);
+        console.log(`last read date: ${data.glucose.readDate}`);
         observer.next(data);
       });
       return () => {

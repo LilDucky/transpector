@@ -1,10 +1,9 @@
 const Transmitter = require('xdrip-js');
 const cp = require('child_process');
 
-// consider making this an id-indexed object
 const transmitters = [
-  {id: '416SA4', nickname: 'G5 1'},
-  {id: '4G2DT7', nickname: 'G5 2'},
+  {id: '416SA4', readDate: null},
+  {id: '4G2DT7', readDate: new Date()},
 ];
 
 module.exports = (io) => {
@@ -30,6 +29,10 @@ module.exports = (io) => {
         io.emit('pending', pending);
       } else if (m.msg == 'glucose') {
         const glucose = m.data;
+        const idx = transmitters.findIndex(e => {
+          return e.id === m.data.id;
+        });
+        transmitters[idx].readDate= m.data.glucose.readDate;
 
 //        console.log('got glucose: ' + glucose.glucose + ' unfiltered: ' + glucose.unfiltered/1000);
         io.emit('glucose', m.data);
@@ -61,7 +64,7 @@ module.exports = (io) => {
     });
   };
 
-  transmitters.forEach((transmitter) => {
+  transmitters.forEach(transmitter => {
     listenToTransmitter(transmitter.id);
   });
 
@@ -69,11 +72,10 @@ module.exports = (io) => {
     getTransmitters: () => {
       return transmitters;
     },
-    // TODO: consider just adding by id
-    addTransmitter: (transmitter) => {
-      transmitters.push({id: transmitter.id, nickname: transmitter.id});
-      listenToTransmitter(transmitter.id);
-      return transmitters[transmitters.length - 1];
+    addTransmitter: (id) => {
+      transmitters.push({id, glucose: null});
+      listenToTransmitter(id);
+      transmitters[transmitters.length - 1];
     },
     deleteTransmitter: (id) => {
       // TODO: stop listening for this transmitter

@@ -1,4 +1,5 @@
 export class Transmitter {
   id: string;
-  nickname: string;
+  readDate: Date;
+  activationDate: Date;
 }

@@ -12,7 +12,9 @@
   <li *ngFor="let transmitter of transmitters">
     <a routerLink="/detail/{{transmitter.id}}">
       <!-- <span class="badge">{{transmitter.id}}</span> {{transmitter.nickname}} -->
-      <span class="badge">{{transmitter.id}}</span> last seen {{date | timeAgo}}
+      <span class="badge">{{transmitter.id}}</span>
+      <span *ngIf="!transmitter.readDate">never seen</span>
+      <span *ngIf="transmitter.readDate">last seen {{transmitter.readDate | timeAgo}} (rssi: {{transmitter.rssi}})</span>
     </a>
     <button class="delete" title="delete transmitter"
       (click)="delete(transmitter)">x</button>

@@ -19,7 +19,7 @@ const getMessages = () => {
 const transmitter = new Transmitter(id);
 
 transmitter.on('glucose', glucose => {
-  process.send({msg: 'glucose', data: { id, glucose }});
+  process.send({msg: 'glucose', data: glucose });
 });
 
 transmitter.on('messageProcessed', data => {

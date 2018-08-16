@@ -19,6 +19,7 @@ export class TransmittersComponent implements OnInit {
     this.getTransmitters();
     this.connection = this.transmitterService.subscribe().subscribe(message => {
       console.log('got message');
+      this.getTransmitters(); // TODO: this is overkill
     })
   }
 
