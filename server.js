@@ -125,7 +125,7 @@ app.delete("/api/transmitters/:id", function(req, res) {
   // stop listening for this transmitter
   transmitter.cleanup();
   const idx = transmitters.findIndex(e => {
-    return e.id === id;
+    return req.params.id === e.id;
   })
   transmitters.splice(idx, 1);
 });
