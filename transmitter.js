@@ -5,6 +5,7 @@ module.exports = (id, io) => {
   let readDate = null;
   let activationDate = null;
   let rssi = null;
+  let worker = null;
   // const pending = [];
   const listenToTransmitter = (id) => {
     worker = cp.fork(__dirname + '/transmitter-worker', [id], {
@@ -77,6 +78,7 @@ module.exports = (id, io) => {
     },
     cleanup() {
       worker.kill();
+      worker = null;
     }
     // getTransmitters: () => {
     //   return transmitters;

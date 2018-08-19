@@ -79,7 +79,7 @@ app.post("/api/transmitters", function(req, res) {
     handleError(res, "Invalid user input", "Must provide an ID.", 400);
   } else {
     const newTransmitter = Transmitter(id)
-    transmitters.push(Transmitter(id));
+    transmitters.push(newTransmitter);
     res.status(201).json(newTransmitter.status);
   }
 });
