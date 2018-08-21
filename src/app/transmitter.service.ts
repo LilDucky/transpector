@@ -30,7 +30,14 @@ export class TransmitterService {
     // return of(TRANSMITTERS);
     return this.http.get<Transmitter[]>(this.transmittersUrl)
     .pipe(
-      tap(heroes => this.log('fetched transmitters')),
+      map(transmitters => {
+        transmitters.forEach(t => {
+          t.readDate = t.readDate ? new Date(t.readDate) : null;
+          t.activationDate = t.activationDate ? new Date(t.activationDate) : null;
+        })
+        return transmitters;
+      }),
+      tap(transmitters => this.log('fetched transmitters')),
       catchError(this.handleError('getTransmitters', []))
     );
   }
@@ -113,8 +120,6 @@ export class TransmitterService {
     };
   }
 }
-
-
 
 // // THE BELOW FROM THE HEROKU EXAMPLE APP
 // import { Injectable } from '@angular/core';
