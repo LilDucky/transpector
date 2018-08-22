@@ -4,6 +4,8 @@ const cp = require('child_process');
 module.exports = (id, io) => {
   let readDate = null;
   let activationDate = null;
+  let state = null;
+  let status = null;
   let rssi = null;
   let worker = null;
   // const pending = [];
@@ -30,6 +32,8 @@ module.exports = (id, io) => {
         const glucose = m.data;
         readDate = glucose.readDate;
         activationDate = glucose.transmitterStartDate;
+        state = glucose.state;
+        status = glucose.status;
         rssi = glucose.rssi;
 
 //        console.log('got glucose: ' + glucose.glucose + ' unfiltered: ' + glucose.unfiltered/1000);
@@ -73,6 +77,8 @@ module.exports = (id, io) => {
         id,
         readDate,
         activationDate,
+        state,
+        status,
         rssi
       };
     },
