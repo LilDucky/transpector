@@ -36,7 +36,7 @@ export class TransmittersComponent implements OnInit {
   connection;
 
   // displayedColumns: string[] = ['name', 'email', 'phone', 'company'];
-  displayedColumns: string[] = ['id', 'readDate', 'activationDate', 'state', 'status', 'rssi'];
+  displayedColumns: string[] = ['id', 'readDate', 'activationDate', 'state', 'status', 'rssi', 'reset'];
   dataSource = new TransmitterDataSource(this.transmitterService);
 
 
@@ -75,6 +75,10 @@ export class TransmittersComponent implements OnInit {
   delete(transmitter: Transmitter): void {
     this.transmitters = this.transmitters.filter(t => t !== transmitter);
     this.transmitterService.deleteTransmitter(transmitter).subscribe();
+  }
+
+  reset(transmitter: Transmitter): void {
+    console.log(`got reset for id ${transmitter.id}`)
   }
 }
 export class TransmitterDataSource extends DataSource<any> {

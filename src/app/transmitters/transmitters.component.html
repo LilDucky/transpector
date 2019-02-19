@@ -60,6 +60,13 @@
   <td mat-cell *matCellDef="let element"> {{element.rssi}} </td>
 </ng-container>
 
+<ng-container matColumnDef="reset">
+  <th mat-header-cell *matHeaderCellDef> Reset </th>
+  <td mat-cell *matCellDef="let element">
+    <button (click)="reset(element)">Reset</button>
+  </td>
+</ng-container>
+
 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
