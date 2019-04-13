@@ -103,18 +103,16 @@ app.get("/api/transmitters/:id", function(req, res) {
 });
 
 app.put("/api/transmitters/:id", function(req, res) {
-  // TODO: implement
-  // var updateDoc = req.body;
-  // delete updateDoc._id;
-  //
-  // db.collection(CONTACTS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
-  //   if (err) {
-  //     handleError(res, err.message, "Failed to update contact");
-  //   } else {
-  //     updateDoc._id = req.params.id;
-  //     res.status(200).json(updateDoc);
-  //   }
-  // });
+  var command = req.body;
+  var transmitter = transmitters.find(function(e) {
+    return req.params.id === e.id;
+  });
+  if (transmitter) {
+    transmitter.sendCommand(command);
+    res.status(200).json(transmitter.status);
+  } else {
+    handleError(res, "blah", "Failed to get transmitter");
+  }
 });
 
 app.delete("/api/transmitters/:id", function(req, res) {

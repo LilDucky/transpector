@@ -51,7 +51,7 @@ export class TransmittersComponent implements OnInit {
       console.log('got message');
       this.getTransmitters(); // TODO: this is overkill
     })
-  }fsfewt
+  }
 
   ngOnDestroy() {
     this.connection.unsubscribe();
@@ -79,6 +79,7 @@ export class TransmittersComponent implements OnInit {
 
   reset(transmitter: Transmitter): void {
     console.log(`got reset for id ${transmitter.id}`)
+    this.transmitterService.resetTransmitter(transmitter).subscribe();
   }
 }
 export class TransmitterDataSource extends DataSource<any> {

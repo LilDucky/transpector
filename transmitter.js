@@ -8,7 +8,8 @@ module.exports = (id, io) => {
   let status = null;
   let rssi = null;
   let worker = null;
-  // const pending = [];
+  const pending = [];
+
   const listenToTransmitter = (id) => {
     worker = cp.fork(__dirname + '/transmitter-worker', [id], {
       env: {
@@ -79,12 +80,16 @@ module.exports = (id, io) => {
         activationDate,
         state,
         status,
-        rssi
+        rssi,
+        pending
       };
     },
     cleanup() {
       worker.kill();
       worker = null;
+    },
+    sendCommand(command) {
+      pending.push(command);
     }
     // getTransmitters: () => {
     //   return transmitters;

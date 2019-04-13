@@ -6,6 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import * as io from 'socket.io-client';
 
 import { Transmitter } from './transmitter';
+import { Command } from './command';
 import { MessageService } from './message.service';
 
 const httpOptions = {
@@ -50,11 +51,16 @@ export class TransmitterService {
     );
   }
 
-  /** PUT: update the hero on the server */
-  updateTransmitter(transmitter: Transmitter): Observable<any> {
-    return this.http.put(this.transmittersUrl, transmitter, httpOptions).pipe(
-      tap(_ => this.log(`updated transmitter id=${transmitter.id}`)),
-      catchError(this.handleError<any>('updateTransmitter'))
+  /** PUT: reset a transmitter */
+  resetTransmitter(transmitter: Transmitter | string): Observable<Transmitter> {
+    const id = typeof transmitter === 'string' ? transmitter : transmitter.id;
+    const url = `${this.transmittersUrl}/${id}`;
+
+    const command: Command = {date: new Date(), action: 'reset'}
+
+    return this.http.put<Transmitter>(url, command, httpOptions).pipe(
+      tap(_ => this.log(`reset transmitter id=${id}`)),
+      catchError(this.handleError<any>('resetTransmitter'))
     );
   }
 
