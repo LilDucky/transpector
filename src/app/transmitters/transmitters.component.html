@@ -8,10 +8,10 @@
     add
   </button>
 </div>
+<!--
 <ul class="transmitters">
   <li *ngFor="let transmitter of transmitters">
     <a routerLink="/detail/{{transmitter.id}}">
-      <!-- <span class="badge">{{transmitter.id}}</span> {{transmitter.nickname}} -->
       <span class="badge">{{transmitter.id}}</span>
       <span *ngIf="!transmitter.readDate">never seen</span>
       <span *ngIf="transmitter.readDate">last seen {{transmitter.readDate | timeAgo}} (rssi: {{transmitter.rssi}})</span>
@@ -20,6 +20,8 @@
       (click)="delete(transmitter)">x</button>
   </li>
 </ul>
+-->
+
 
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
