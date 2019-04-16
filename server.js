@@ -2,6 +2,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 
 const socketIO = require('socket.io');
+const Scanner = require('./scanner');
 const Transmitter = require('./transmitter');
 
 const transmitters = [];
@@ -49,6 +50,8 @@ io.on('connection', (socket) => {
 
 // TransmitterIO(io.of('/cgm')); // TODO: not sure if we need namespaces
 //const transmitterIO = TransmitterIO(io); // TODO: not sure if we need namespaces
+Scanner(io);
+
 transmitters.push(Transmitter('416SA4', io));
 transmitters.push(Transmitter('4G2DT7', io));
 
@@ -126,6 +129,7 @@ app.delete("/api/transmitters/:id", function(req, res) {
     return req.params.id === e.id;
   })
   transmitters.splice(idx, 1);
+  res.status(200).send();
 });
 
 // prevent error message on reloads as per https://stackoverflow.com/a/35284602

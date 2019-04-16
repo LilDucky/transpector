@@ -75,6 +75,7 @@ export class TransmitterService {
 
   /** DELETE: delete the transmitter from the server */
   deleteTransmitter (transmitter: Transmitter | string): Observable<Transmitter> {
+    console.log(`deleting transmitter`);
     const id = typeof transmitter === 'string' ? transmitter : transmitter.id;
     const url = `${this.transmittersUrl}/${id}`;
 
