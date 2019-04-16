@@ -95,6 +95,9 @@ export class TransmitterService {
         console.log(`last read date: ${data.glucose.readDate}`);
         observer.next(data);
       });
+      this.socket.on('sawTransmitter', (data) => {
+        console.log(`saw transmitter ${data}`);
+      });
       return () => {
         this.socket.disconnect();
       };
