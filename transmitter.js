@@ -15,7 +15,8 @@ module.exports = (id, io) => {
   let runtime = null;
   let temperature = null;
 
-  const pending = [];
+  let resetPending = false;
+//  const pending = [];
 
   const listenToTransmitter = (id) => {
     worker = cp.fork(__dirname + '/transmitter-worker', [id], {
@@ -26,16 +27,14 @@ module.exports = (id, io) => {
 
     worker.on('message', m => {
       if (m.msg == 'getMessages') {
-        // if (!txStatus || (moment().diff(txStatus.timestamp, 'minutes') > 25)) {
-        pending.push({type: 'BatteryStatus'});
-        // }
+        const pending = [];
 
-        // if (id === '41MLX0') {
-        //   worker.send([{type: 'BatteryStatus'}, {type: 'ResetTx'}]);
-        // } else {
-          worker.send([{type: 'BatteryStatus'}]);
-          // worker.send([{type: 'ResetTx'}]);
-        // }
+        pending.push({type: 'BatteryStatus'});
+        if (resetPending) {
+          pending.push({type: 'ResetTx'});
+          resetPending = false;
+        }
+        worker.send(pending);
 
         // NOTE: this will lead to missed messages if the rig
         // shuts down before acting on them, or in the
@@ -103,7 +102,7 @@ module.exports = (id, io) => {
         state,
         status,
         rssi,
-        pending,
+        resetPending,
         voltagea,
         voltageb,
         resist,
@@ -116,7 +115,9 @@ module.exports = (id, io) => {
       worker = null;
     },
     sendCommand(command) {
-      pending.push(command);
+      if (command.action === 'reset') {
+        resetPending = true;
+      }
     }
     // getTransmitters: () => {
     //   return transmitters;
