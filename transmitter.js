@@ -4,23 +4,38 @@ const cp = require('child_process');
 module.exports = (id, io) => {
   let readDate = null;
   let activationDate = null;
+  let state = null;
+  let status = null;
   let rssi = null;
   let worker = null;
-  // const pending = [];
+
+  let voltagea = null;
+  let voltageb = null;
+  let resist = null;
+  let runtime = null;
+  let temperature = null;
+
+  let resetPending = false;
+//  const pending = [];
+
   const listenToTransmitter = (id) => {
     worker = cp.fork(__dirname + '/transmitter-worker', [id], {
       env: {
-        DEBUG: 'transmitter'
+        DEBUG: 'transmitter,bluetooth-manager'
       }
     });
 
     worker.on('message', m => {
       if (m.msg == 'getMessages') {
-        // if (!txStatus || (moment().diff(txStatus.timestamp, 'minutes') > 25)) {
-        //   pending.push({type: 'BatteryStatus'});
-        // }
+        const pending = [];
 
+        pending.push({type: 'BatteryStatus'});
+        if (resetPending) {
+          pending.push({type: 'ResetTx'});
+          resetPending = false;
+        }
         worker.send(pending);
+
         // NOTE: this will lead to missed messages if the rig
         // shuts down before acting on them, or in the
         // event of lost comms
@@ -30,6 +45,8 @@ module.exports = (id, io) => {
         const glucose = m.data;
         readDate = glucose.readDate;
         activationDate = glucose.transmitterStartDate;
+        state = glucose.state;
+        status = glucose.status;
         rssi = glucose.rssi;
 
 //        console.log('got glucose: ' + glucose.glucose + ' unfiltered: ' + glucose.unfiltered/1000);
@@ -41,6 +58,15 @@ module.exports = (id, io) => {
       } else if (m.msg == 'calibrationData') {
 //        processG5CalData(m.data);
       } else if (m.msg == 'batteryStatus') {
+        console.log('got battery status')
+        const batteryStatus = m.data;
+        // this.status = data.readUInt8(1);
+        voltagea = batteryStatus.voltagea;
+        voltageb = batteryStatus.voltageb;
+        resist = batteryStatus.resist;
+        runtime = batteryStatus.runtime;
+        temperature = batteryStatus.temperature;
+        console.log(`got battery status: voltagea = ${voltagea}`)
 //        processBatteryStatus(m.data);
       } else if (m.msg == 'sawTransmitter') {
       }
@@ -73,12 +99,25 @@ module.exports = (id, io) => {
         id,
         readDate,
         activationDate,
-        rssi
+        state,
+        status,
+        rssi,
+        resetPending,
+        voltagea,
+        voltageb,
+        resist,
+        runtime,
+        temperature
       };
     },
     cleanup() {
       worker.kill();
       worker = null;
+    },
+    sendCommand(command) {
+      if (command.action === 'reset') {
+        resetPending = true;
+      }
     }
     // getTransmitters: () => {
     //   return transmitters;

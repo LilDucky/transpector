@@ -6,6 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import * as io from 'socket.io-client';
 
 import { Transmitter } from './transmitter';
+import { Command } from './command';
 import { MessageService } from './message.service';
 
 const httpOptions = {
@@ -30,7 +31,14 @@ export class TransmitterService {
     // return of(TRANSMITTERS);
     return this.http.get<Transmitter[]>(this.transmittersUrl)
     .pipe(
-      tap(heroes => this.log('fetched transmitters')),
+      map(transmitters => {
+        transmitters.forEach(t => {
+          t.readDate = t.readDate ? new Date(t.readDate) : null;
+          t.activationDate = t.activationDate ? new Date(t.activationDate) : null;
+        })
+        return transmitters;
+      }),
+      tap(transmitters => this.log('fetched transmitters')),
       catchError(this.handleError('getTransmitters', []))
     );
   }
@@ -43,11 +51,16 @@ export class TransmitterService {
     );
   }
 
-  /** PUT: update the hero on the server */
-  updateTransmitter(transmitter: Transmitter): Observable<any> {
-    return this.http.put(this.transmittersUrl, transmitter, httpOptions).pipe(
-      tap(_ => this.log(`updated transmitter id=${transmitter.id}`)),
-      catchError(this.handleError<any>('updateTransmitter'))
+  /** PUT: reset a transmitter */
+  resetTransmitter(transmitter: Transmitter | string): Observable<Transmitter> {
+    const id = typeof transmitter === 'string' ? transmitter : transmitter.id;
+    const url = `${this.transmittersUrl}/${id}`;
+
+    const command: Command = {date: new Date(), action: 'reset'}
+
+    return this.http.put<Transmitter>(url, command, httpOptions).pipe(
+      tap(_ => this.log(`reset transmitter id=${id}`)),
+      catchError(this.handleError<any>('resetTransmitter'))
     );
   }
 
@@ -62,6 +75,7 @@ export class TransmitterService {
 
   /** DELETE: delete the transmitter from the server */
   deleteTransmitter (transmitter: Transmitter | string): Observable<Transmitter> {
+    console.log(`deleting transmitter`);
     const id = typeof transmitter === 'string' ? transmitter : transmitter.id;
     const url = `${this.transmittersUrl}/${id}`;
 
@@ -80,6 +94,9 @@ export class TransmitterService {
         console.log(`got data from ${data.id}: ${data.glucose.transmitterStartDate}`);
         console.log(`last read date: ${data.glucose.readDate}`);
         observer.next(data);
+      });
+      this.socket.on('sawTransmitter', (data) => {
+        console.log(`saw transmitter ${data}`);
       });
       return () => {
         this.socket.disconnect();
@@ -113,8 +130,6 @@ export class TransmitterService {
     };
   }
 }
-
-
 
 // // THE BELOW FROM THE HEROKU EXAMPLE APP
 // import { Injectable } from '@angular/core';

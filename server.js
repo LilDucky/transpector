@@ -2,6 +2,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 
 const socketIO = require('socket.io');
+const Scanner = require('./scanner');
 const Transmitter = require('./transmitter');
 
 const transmitters = [];
@@ -49,8 +50,11 @@ io.on('connection', (socket) => {
 
 // TransmitterIO(io.of('/cgm')); // TODO: not sure if we need namespaces
 //const transmitterIO = TransmitterIO(io); // TODO: not sure if we need namespaces
-transmitters.push(Transmitter('416SA4', io));
-transmitters.push(Transmitter('4G2DT7', io));
+Scanner(io);
+
+transmitters.push(Transmitter('41MLX0', io));
+transmitters.push(Transmitter('41N7MG', io));
+transmitters.push(Transmitter('41QEU1', io));
 
 // API ROUTES BELOW
 
@@ -78,7 +82,7 @@ app.post("/api/transmitters", function(req, res) {
   if (!id) {
     handleError(res, "Invalid user input", "Must provide an ID.", 400);
   } else {
-    const newTransmitter = Transmitter(id)
+    const newTransmitter = Transmitter(id, io)
     transmitters.push(newTransmitter);
     res.status(201).json(newTransmitter.status);
   }
@@ -103,18 +107,16 @@ app.get("/api/transmitters/:id", function(req, res) {
 });
 
 app.put("/api/transmitters/:id", function(req, res) {
-  // TODO: implement
-  // var updateDoc = req.body;
-  // delete updateDoc._id;
-  //
-  // db.collection(CONTACTS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
-  //   if (err) {
-  //     handleError(res, err.message, "Failed to update contact");
-  //   } else {
-  //     updateDoc._id = req.params.id;
-  //     res.status(200).json(updateDoc);
-  //   }
-  // });
+  var command = req.body;
+  var transmitter = transmitters.find(function(e) {
+    return req.params.id === e.id;
+  });
+  if (transmitter) {
+    transmitter.sendCommand(command);
+    res.status(200).json(transmitter.status);
+  } else {
+    handleError(res, "blah", "Failed to get transmitter");
+  }
 });
 
 app.delete("/api/transmitters/:id", function(req, res) {
@@ -128,6 +130,7 @@ app.delete("/api/transmitters/:id", function(req, res) {
     return req.params.id === e.id;
   })
   transmitters.splice(idx, 1);
+  res.status(200).send();
 });
 
 // prevent error message on reloads as per https://stackoverflow.com/a/35284602

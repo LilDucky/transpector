@@ -72,3 +72,7 @@ button.delete {
   background-color: gray !important;
   color: white;
 }
+
+table {
+  width: 100%;
+}
