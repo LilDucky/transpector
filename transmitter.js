@@ -8,22 +8,35 @@ module.exports = (id, io) => {
   let status = null;
   let rssi = null;
   let worker = null;
+
+  let voltagea = null;
+  let voltageb = null;
+  let resist = null;
+  let runtime = null;
+  let temperature = null;
+
   const pending = [];
 
   const listenToTransmitter = (id) => {
     worker = cp.fork(__dirname + '/transmitter-worker', [id], {
       env: {
-        DEBUG: 'transmitter'
+        DEBUG: 'transmitter,bluetooth-manager'
       }
     });
 
     worker.on('message', m => {
       if (m.msg == 'getMessages') {
         // if (!txStatus || (moment().diff(txStatus.timestamp, 'minutes') > 25)) {
-        //   pending.push({type: 'BatteryStatus'});
+        pending.push({type: 'BatteryStatus'});
         // }
 
-        worker.send(pending);
+        // if (id === '41MLX0') {
+        //   worker.send([{type: 'BatteryStatus'}, {type: 'ResetTx'}]);
+        // } else {
+          worker.send([{type: 'BatteryStatus'}]);
+          // worker.send([{type: 'ResetTx'}]);
+        // }
+
         // NOTE: this will lead to missed messages if the rig
         // shuts down before acting on them, or in the
         // event of lost comms
@@ -46,6 +59,15 @@ module.exports = (id, io) => {
       } else if (m.msg == 'calibrationData') {
 //        processG5CalData(m.data);
       } else if (m.msg == 'batteryStatus') {
+        console.log('got battery status')
+        const batteryStatus = m.data;
+        // this.status = data.readUInt8(1);
+        voltagea = batteryStatus.voltagea;
+        voltageb = batteryStatus.voltageb;
+        resist = batteryStatus.resist;
+        runtime = batteryStatus.runtime;
+        temperature = batteryStatus.temperature;
+        console.log(`got battery status: voltagea = ${voltagea}`)
 //        processBatteryStatus(m.data);
       } else if (m.msg == 'sawTransmitter') {
       }
@@ -81,7 +103,12 @@ module.exports = (id, io) => {
         state,
         status,
         rssi,
-        pending
+        pending,
+        voltagea,
+        voltageb,
+        resist,
+        runtime,
+        temperature
       };
     },
     cleanup() {

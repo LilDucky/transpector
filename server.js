@@ -52,8 +52,9 @@ io.on('connection', (socket) => {
 //const transmitterIO = TransmitterIO(io); // TODO: not sure if we need namespaces
 Scanner(io);
 
-transmitters.push(Transmitter('416SA4', io));
-transmitters.push(Transmitter('4G2DT7', io));
+transmitters.push(Transmitter('41MLX0', io));
+transmitters.push(Transmitter('41N7MG', io));
+transmitters.push(Transmitter('41QEU1', io));
 
 // API ROUTES BELOW
 
@@ -81,7 +82,7 @@ app.post("/api/transmitters", function(req, res) {
   if (!id) {
     handleError(res, "Invalid user input", "Must provide an ID.", 400);
   } else {
-    const newTransmitter = Transmitter(id)
+    const newTransmitter = Transmitter(id, io)
     transmitters.push(newTransmitter);
     res.status(201).json(newTransmitter.status);
   }

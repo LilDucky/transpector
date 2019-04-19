@@ -14,7 +14,7 @@ import { TimeAgoPipe } from 'time-ago-pipe';
 export class TransmittersComponent implements OnInit, OnDestroy {
   connection;
 
-  displayedColumns: string[] = ['id', 'readDate', 'activationDate', 'state', 'status', 'rssi', 'reset', 'delete'];
+  displayedColumns: string[] = ['id', 'readDate', 'activationDate', 'status', 'rssi', 'batterya', 'batteryb', 'resist', 'reset', 'delete'];
   dataSource = new TransmitterDataSource(this.transmitterService);
 
   constructor(private transmitterService: TransmitterService) { }

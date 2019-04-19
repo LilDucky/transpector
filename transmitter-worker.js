@@ -15,8 +15,8 @@ const getMessages = () => {
 };
 
 // TODO: reinstate messages
-// const transmitter = new Transmitter(id, getMessages);
-const transmitter = new Transmitter(id);
+const transmitter = new Transmitter(id, getMessages);
+// const transmitter = new Transmitter(id);
 
 transmitter.on('glucose', glucose => {
   process.send({msg: 'glucose', data: glucose });
