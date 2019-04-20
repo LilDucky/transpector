@@ -2,7 +2,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 
 const socketIO = require('socket.io');
-const Scanner = require('./scanner');
+// const Scanner = require('./scanner');
 const Transmitter = require('./transmitter');
 
 const transmitters = [];
@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
 
 // TransmitterIO(io.of('/cgm')); // TODO: not sure if we need namespaces
 //const transmitterIO = TransmitterIO(io); // TODO: not sure if we need namespaces
-Scanner(io);
+// Scanner(io);
 
 transmitters.push(Transmitter('41MLX0', io));
 transmitters.push(Transmitter('41N7MG', io));

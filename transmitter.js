@@ -53,8 +53,8 @@ module.exports = (id, io) => {
         io.emit('glucose', m.data);
       } else if (m.msg == 'messageProcessed') {
         // TODO: check that dates match
-        pending.shift();
-        io.emit('pending', pending);
+        // pending.shift();
+        // io.emit('pending', pending);
       } else if (m.msg == 'calibrationData') {
 //        processG5CalData(m.data);
       } else if (m.msg == 'batteryStatus') {
